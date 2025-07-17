@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo, useCallback } from "react";
 import {
   MantineProvider,
   Text,
@@ -34,8 +34,18 @@ export default function App() {
   const appRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
 
-  // Datei aus Dropzone laden
-  const handleFile = async (which: 'A' | 'B', file: File) => {
+  // Memoized diff calculation
+  const diff: DiffEntry[] = useMemo(() => {
+    return envA && envB ? diffEnv(envA, envB) as DiffEntry[] : [];
+  }, [envA, envB]);
+
+  // Memoized filtered diff
+  const filteredDiff = useMemo(() => {
+    return showOnlyDiff ? diff.filter(d => d.status !== 'equal') : diff;
+  }, [diff, showOnlyDiff]);
+
+  // Optimized file handler
+  const handleFile = useCallback(async (which: 'A' | 'B', file: File) => {
     const name = file.name.toLowerCase();
     if (!name.endsWith('.env') && !name.endsWith('.txt')) {
       setNotif({ type: 'error', message: t('upload.error') });
@@ -54,10 +64,10 @@ export default function App() {
     } catch (e) {
       setNotif({ type: 'error', message: t('upload.readError') });
     }
-  };
+  }, [t]);
 
-  // Drag & Drop Handler
-  const onDrop = async (e: React.DragEvent) => {
+  // Optimized drag & drop handlers
+  const onDrop = useCallback(async (e: React.DragEvent) => {
     e.preventDefault();
     setDragActive(false);
     const files = Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.env') || f.name.endsWith('.txt'));
@@ -72,35 +82,50 @@ export default function App() {
     } else {
       setNotif({ type: 'error', message: t('upload.bothSlotsFull') });
     }
-  };
-  const onDragOver = (e: React.DragEvent) => {
+  }, [fileA, fileB, handleFile, t]);
+
+  const onDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragActive(true);
-  };
-  const onDragLeave = (e: React.DragEvent) => {
+  }, []);
+
+  const onDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragActive(false);
-  };
+  }, []);
 
-  const diff: DiffEntry[] = envA && envB ? diffEnv(envA, envB) as DiffEntry[] : [];
-  const filteredDiff = showOnlyDiff
-    ? diff.filter(d => d.status !== 'equal')
-    : diff;
+  // Optimized remove handlers
+  const removeFileA = useCallback(() => {
+    setFileA(null);
+    setEnvA(null);
+  }, []);
+
+  const removeFileB = useCallback(() => {
+    setFileB(null);
+    setEnvB(null);
+  }, []);
+
+  const closeNotification = useCallback(() => {
+    setNotif(null);
+  }, []);
+
+  // Memoized theme configuration
+  const theme = useMemo(() => ({
+    primaryColor: 'indigo',
+    fontFamily: 'Inter, system-ui, sans-serif',
+    defaultRadius: 'xl',
+    headings: { fontWeight: '800' },
+    components: {
+      Button: { defaultProps: { radius: 'xl', size: 'lg' } },
+      Card: { defaultProps: { radius: 'xl', shadow: 'xl' } },
+      Paper: { defaultProps: { radius: 'lg', shadow: 'md' } },
+    },
+  }), []);
 
   return (
     <MantineProvider
       withCssVariables
-      theme={{
-        primaryColor: 'indigo',
-        fontFamily: 'Inter, system-ui, sans-serif',
-        defaultRadius: 'xl',
-        headings: { fontWeight: '800' },
-        components: {
-          Button: { defaultProps: { radius: 'xl', size: 'lg' } },
-          Card: { defaultProps: { radius: 'xl', shadow: 'xl' } },
-          Paper: { defaultProps: { radius: 'lg', shadow: 'md' } },
-        },
-      }}
+      theme={theme}
       defaultColorScheme="dark"
     >
       <Box 
@@ -148,12 +173,22 @@ export default function App() {
         {/* Datei-Uploads */}
         <Box className="animate-fadeIn" style={{ margin: '0 auto', maxWidth: 1200, marginBottom: 50 }}>
           <Group justify="center" align="flex-start" gap={64}>
-            <FileUploadButton label={t('upload.fileA')} file={fileA} onFile={f => handleFile('A', f)} onRemove={() => { setFileA(null); setEnvA(null); }} />
-            <FileUploadButton label={t('upload.fileB')} file={fileB} onFile={f => handleFile('B', f)} onRemove={() => { setFileB(null); setEnvB(null); }} />
+            <FileUploadButton 
+              label={t('upload.fileA')} 
+              file={fileA} 
+              onFile={(f) => handleFile('A', f)} 
+              onRemove={removeFileA} 
+            />
+            <FileUploadButton 
+              label={t('upload.fileB')} 
+              file={fileB} 
+              onFile={(f) => handleFile('B', f)} 
+              onRemove={removeFileB} 
+            />
           </Group>
         </Box>
         {/* Notifications */}
-        <NotificationBar notif={notif} onClose={() => setNotif(null)} />
+        <NotificationBar notif={notif} onClose={closeNotification} />
         {/* Status */}
         <StatusBanner diff={filteredDiff} envA={envA} envB={envB} />
         {/* Diff-Ansicht */}

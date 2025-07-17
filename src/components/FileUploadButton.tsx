@@ -1,23 +1,23 @@
 import { Group, Button, ActionIcon, Tooltip } from '@mantine/core';
 import { File, X } from 'tabler-icons-react';
-import { useRef } from 'react';
+import { useRef, memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export function FileUploadButton({ label, file, onFile, onRemove }: { label: string, file: File | null, onFile: (file: File) => void, onRemove: () => void }) {
+export const FileUploadButton = memo(({ label, file, onFile, onRemove }: { label: string, file: File | null, onFile: (file: File) => void, onRemove: () => void }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation();
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     fileInputRef.current?.click();
-  };
+  }, []);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
       onFile(selectedFile);
       event.target.value = '';
     }
-  };
+  }, [onFile]);
 
   return (
     <Group align="center" gap="md" style={{ minWidth: 320 }}>
@@ -79,4 +79,6 @@ export function FileUploadButton({ label, file, onFile, onRemove }: { label: str
       )}
     </Group>
   );
-} 
+});
+
+FileUploadButton.displayName = 'FileUploadButton'; 

@@ -4,11 +4,13 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
 import { useTranslation } from 'react-i18next';
+import { memo, useMemo, useCallback } from 'react';
 
-export function ExportButtons({ diff, envA, envB }: { diff: any[]; envA: any; envB: any }) {
+export const ExportButtons = memo(({ diff, envA, envB }: { diff: any[]; envA: any; envB: any }) => {
   const { t } = useTranslation();
 
-  const getExport = (type: 'csv' | 'md' | 'txt' | 'json' | 'xml' | 'yaml') => {
+  // Memoized export functions
+  const getExport = useCallback((type: 'csv' | 'md' | 'txt' | 'json' | 'xml' | 'yaml') => {
     if (!envA || !envB) return '';
     
     if (type === 'csv') {
@@ -58,9 +60,9 @@ ${diff.map(d => `  - key: ${d.key}
     } else {
       return diff.map(d => `${d.key}: [${d.status}]\nA: ${d.valueA}\nB: ${d.valueB}\n`).join('\n');
     }
-  };
+  }, [diff, envA, envB]);
 
-  const download = (content: string, filename: string, type: string) => {
+  const download = useCallback((content: string, filename: string, type: string) => {
     const blob = new Blob([content], { type });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -72,9 +74,9 @@ ${diff.map(d => `  - key: ${d.key}
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }, 100);
-  };
+  }, []);
 
-  const downloadAsExcel = () => {
+  const downloadAsExcel = useCallback(() => {
     if (!envA || !envB) return;
 
     // Erstelle Arbeitsblätter für verschiedene Ansichten
@@ -115,9 +117,9 @@ ${diff.map(d => `  - key: ${d.key}
 
     // Excel-Datei herunterladen
     XLSX.writeFile(workbook, 'envdiff.xlsx');
-  };
+  }, [diff, envA, envB]);
 
-  const downloadAsPNG = async () => {
+  const downloadAsPNG = useCallback(async () => {
     const diffNode = document.getElementById('envdiff-preview');
     if (!diffNode) return;
     const canvas = await html2canvas(diffNode, { backgroundColor: null, scale: 2 });
@@ -135,9 +137,9 @@ ${diff.map(d => `  - key: ${d.key}
         }, 100);
       }
     });
-  };
+  }, []);
 
-  const downloadAsPDF = async () => {
+  const downloadAsPDF = useCallback(async () => {
     const diffNode = document.getElementById('envdiff-preview');
     if (!diffNode) return;
     const canvas = await html2canvas(diffNode, { backgroundColor: null, scale: 2 });
@@ -145,7 +147,74 @@ ${diff.map(d => `  - key: ${d.key}
     const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [canvas.width, canvas.height] });
     pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
     pdf.save('envdiff.pdf');
-  };
+  }, []);
+
+  // Memoized button styles
+  const buttonStyles = useMemo(() => ({
+    excel: {
+      background: 'linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(34,197,94,0.05) 100%)',
+      border: '1px solid rgba(34,197,94,0.2)',
+      backdropFilter: 'blur(10px)',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      fontWeight: 600
+    },
+    csv: {
+      background: 'linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(59,130,246,0.05) 100%)',
+      border: '1px solid rgba(59,130,246,0.2)',
+      backdropFilter: 'blur(10px)',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      fontWeight: 600
+    },
+    markdown: {
+      background: 'linear-gradient(135deg, rgba(20,184,166,0.1) 0%, rgba(20,184,166,0.05) 100%)',
+      border: '1px solid rgba(20,184,166,0.2)',
+      backdropFilter: 'blur(10px)',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      fontWeight: 600
+    },
+    json: {
+      background: 'linear-gradient(135deg, rgba(139,92,246,0.1) 0%, rgba(139,92,246,0.05) 100%)',
+      border: '1px solid rgba(139,92,246,0.2)',
+      backdropFilter: 'blur(10px)',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      fontWeight: 600
+    },
+    text: {
+      background: 'linear-gradient(135deg, rgba(107,114,128,0.1) 0%, rgba(107,114,128,0.05) 100%)',
+      border: '1px solid rgba(107,114,128,0.2)',
+      backdropFilter: 'blur(10px)',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      fontWeight: 600
+    },
+    xml: {
+      background: 'linear-gradient(135deg, rgba(249,115,22,0.1) 0%, rgba(249,115,22,0.05) 100%)',
+      border: '1px solid rgba(249,115,22,0.2)',
+      backdropFilter: 'blur(10px)',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      fontWeight: 600
+    },
+    yaml: {
+      background: 'linear-gradient(135deg, rgba(6,182,212,0.1) 0%, rgba(6,182,212,0.05) 100%)',
+      border: '1px solid rgba(6,182,212,0.2)',
+      backdropFilter: 'blur(10px)',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      fontWeight: 600
+    },
+    png: {
+      background: 'linear-gradient(135deg, rgba(249,115,22,0.1) 0%, rgba(249,115,22,0.05) 100%)',
+      border: '1px solid rgba(249,115,22,0.2)',
+      backdropFilter: 'blur(10px)',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      fontWeight: 600
+    },
+    pdf: {
+      background: 'linear-gradient(135deg, rgba(239,68,68,0.1) 0%, rgba(239,68,68,0.05) 100%)',
+      border: '1px solid rgba(239,68,68,0.2)',
+      backdropFilter: 'blur(10px)',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      fontWeight: 600
+    }
+  }), []);
 
   return (
     <Group gap="lg" mt="xl" justify="center" wrap="wrap" className="animate-fadeIn">
@@ -156,13 +225,7 @@ ${diff.map(d => `  - key: ${d.key}
         size="lg" 
         radius="xl" 
         onClick={downloadAsExcel}
-        style={{
-          background: 'linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(34,197,94,0.05) 100%)',
-          border: '1px solid rgba(34,197,94,0.2)',
-          backdropFilter: 'blur(10px)',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          fontWeight: 600
-        }}
+        style={buttonStyles.excel}
       >
         {t('export.excel')}
       </Button>
@@ -173,13 +236,7 @@ ${diff.map(d => `  - key: ${d.key}
         size="lg" 
         radius="xl" 
         onClick={() => download(getExport('csv'), 'envdiff.csv', 'text/csv')}
-        style={{
-          background: 'linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(59,130,246,0.05) 100%)',
-          border: '1px solid rgba(59,130,246,0.2)',
-          backdropFilter: 'blur(10px)',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          fontWeight: 600
-        }}
+        style={buttonStyles.csv}
       >
         {t('export.csv')}
       </Button>
@@ -190,13 +247,7 @@ ${diff.map(d => `  - key: ${d.key}
         size="lg" 
         radius="xl" 
         onClick={() => download(getExport('md'), 'envdiff.md', 'text/markdown')}
-        style={{
-          background: 'linear-gradient(135deg, rgba(20,184,166,0.1) 0%, rgba(20,184,166,0.05) 100%)',
-          border: '1px solid rgba(20,184,166,0.2)',
-          backdropFilter: 'blur(10px)',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          fontWeight: 600
-        }}
+        style={buttonStyles.markdown}
       >
         {t('export.markdown')}
       </Button>
@@ -207,13 +258,7 @@ ${diff.map(d => `  - key: ${d.key}
         size="lg" 
         radius="xl" 
         onClick={() => download(getExport('json'), 'envdiff.json', 'application/json')}
-        style={{
-          background: 'linear-gradient(135deg, rgba(139,92,246,0.1) 0%, rgba(139,92,246,0.05) 100%)',
-          border: '1px solid rgba(139,92,246,0.2)',
-          backdropFilter: 'blur(10px)',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          fontWeight: 600
-        }}
+        style={buttonStyles.json}
       >
         {t('export.json')}
       </Button>
@@ -224,13 +269,7 @@ ${diff.map(d => `  - key: ${d.key}
         size="lg" 
         radius="xl" 
         onClick={() => download(getExport('txt'), 'envdiff.txt', 'text/plain')}
-        style={{
-          background: 'linear-gradient(135deg, rgba(107,114,128,0.1) 0%, rgba(107,114,128,0.05) 100%)',
-          border: '1px solid rgba(107,114,128,0.2)',
-          backdropFilter: 'blur(10px)',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          fontWeight: 600
-        }}
+        style={buttonStyles.text}
       >
         {t('export.text')}
       </Button>
@@ -241,13 +280,7 @@ ${diff.map(d => `  - key: ${d.key}
         size="lg" 
         radius="xl" 
         onClick={() => download(getExport('xml'), 'envdiff.xml', 'application/xml')}
-        style={{
-          background: 'linear-gradient(135deg, rgba(249,115,22,0.1) 0%, rgba(249,115,22,0.05) 100%)',
-          border: '1px solid rgba(249,115,22,0.2)',
-          backdropFilter: 'blur(10px)',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          fontWeight: 600
-        }}
+        style={buttonStyles.xml}
       >
         {t('export.xml')}
       </Button>
@@ -258,13 +291,7 @@ ${diff.map(d => `  - key: ${d.key}
         size="lg" 
         radius="xl" 
         onClick={() => download(getExport('yaml'), 'envdiff.yaml', 'text/yaml')}
-        style={{
-          background: 'linear-gradient(135deg, rgba(6,182,212,0.1) 0%, rgba(6,182,212,0.05) 100%)',
-          border: '1px solid rgba(6,182,212,0.2)',
-          backdropFilter: 'blur(10px)',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          fontWeight: 600
-        }}
+        style={buttonStyles.yaml}
       >
         {t('export.yaml')}
       </Button>
@@ -275,13 +302,7 @@ ${diff.map(d => `  - key: ${d.key}
         size="lg" 
         radius="xl" 
         onClick={downloadAsPNG}
-        style={{
-          background: 'linear-gradient(135deg, rgba(249,115,22,0.1) 0%, rgba(249,115,22,0.05) 100%)',
-          border: '1px solid rgba(249,115,22,0.2)',
-          backdropFilter: 'blur(10px)',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          fontWeight: 600
-        }}
+        style={buttonStyles.png}
       >
         {t('export.png')}
       </Button>
@@ -292,16 +313,12 @@ ${diff.map(d => `  - key: ${d.key}
         size="lg" 
         radius="xl" 
         onClick={downloadAsPDF}
-        style={{
-          background: 'linear-gradient(135deg, rgba(239,68,68,0.1) 0%, rgba(239,68,68,0.05) 100%)',
-          border: '1px solid rgba(239,68,68,0.2)',
-          backdropFilter: 'blur(10px)',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          fontWeight: 600
-        }}
+        style={buttonStyles.pdf}
       >
         {t('export.pdf')}
       </Button>
     </Group>
   );
-} 
+});
+
+ExportButtons.displayName = 'ExportButtons'; 
