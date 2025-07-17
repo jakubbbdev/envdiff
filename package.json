@@ -1,7 +1,14 @@
 {
   "name": "envdiff",
+  "version": "1.0.0",
+  "description": "Modern .env file diff and sync tool for developers. Compare, export, and keep your environment files in sync.",
+  "author": "jakubbbdev",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jakubbbdev/envdiff.git"
+  },
   "private": true,
-  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
