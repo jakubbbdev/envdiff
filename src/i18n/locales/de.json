@@ -1,0 +1,57 @@
+{
+  "app": {
+    "title": "EnvDiff",
+    "subtitle": "Umgebungsdatei Diff-Tool"
+  },
+  "upload": {
+    "fileA": "Datei A wählen",
+    "fileB": "Datei B wählen",
+    "dragDrop": "Datei hier ablegen...",
+    "selectFile": ".env oder .txt-Datei auswählen",
+    "removeFile": "Datei entfernen",
+    "error": "Nur .env oder .txt-Dateien erlaubt!",
+    "readError": "Datei konnte nicht gelesen werden.",
+    "success": "Datei {{name}} geladen!",
+    "bothSlotsFull": "Beide Slots sind belegt. Entferne zuerst eine Datei."
+  },
+  "status": {
+    "identical": "Die Dateien sind identisch.",
+    "differences": "Unterschiede gefunden!",
+    "selectFiles": "Bitte wähle zwei .env oder .txt-Dateien aus, um die Unterschiede anzuzeigen.",
+    "noDifferences": "Keine Unterschiede gefunden oder keine Dateien geladen."
+  },
+  "diff": {
+    "showOnly": "Nur Unterschiede anzeigen",
+    "equal": "gleich",
+    "different": "unterschiedlich",
+    "onlyInA": "nur in A",
+    "onlyInB": "nur in B",
+    "copyValue": "Wert kopieren",
+    "copied": "Kopiert!"
+  },
+  "export": {
+    "excel": "Excel",
+    "csv": "CSV",
+    "markdown": "Markdown",
+    "json": "JSON",
+    "text": "Text",
+    "xml": "XML",
+    "yaml": "YAML",
+    "png": "PNG",
+    "pdf": "PDF"
+  },
+  "language": {
+    "en": "English",
+    "de": "Deutsch",
+    "selector": "Language / Sprache"
+  },
+  "common": {
+    "loading": "Lädt...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "cancel": "Abbrechen",
+    "ok": "OK",
+    "yes": "Ja",
+    "no": "Nein"
+  }
+} 

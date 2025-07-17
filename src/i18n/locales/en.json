@@ -1,0 +1,57 @@
+{
+  "app": {
+    "title": "EnvDiff",
+    "subtitle": "Environment File Diff Tool"
+  },
+  "upload": {
+    "fileA": "Choose File A",
+    "fileB": "Choose File B",
+    "dragDrop": "Drop file here...",
+    "selectFile": "Select .env or .txt file",
+    "removeFile": "Remove file",
+    "error": "Only .env or .txt files allowed!",
+    "readError": "File could not be read.",
+    "success": "File {{name}} loaded!",
+    "bothSlotsFull": "Both slots are occupied. Remove a file first."
+  },
+  "status": {
+    "identical": "The files are identical.",
+    "differences": "Differences found!",
+    "selectFiles": "Please select two .env or .txt files to show the differences.",
+    "noDifferences": "No differences found or no files loaded."
+  },
+  "diff": {
+    "showOnly": "Show only differences",
+    "equal": "equal",
+    "different": "different",
+    "onlyInA": "only in A",
+    "onlyInB": "only in B",
+    "copyValue": "Copy value",
+    "copied": "Copied!"
+  },
+  "export": {
+    "excel": "Excel",
+    "csv": "CSV",
+    "markdown": "Markdown",
+    "json": "JSON",
+    "text": "Text",
+    "xml": "XML",
+    "yaml": "YAML",
+    "png": "PNG",
+    "pdf": "PDF"
+  },
+  "language": {
+    "en": "English",
+    "de": "Deutsch",
+    "selector": "Language / Sprache"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "ok": "OK",
+    "yes": "Yes",
+    "no": "No"
+  }
+} 

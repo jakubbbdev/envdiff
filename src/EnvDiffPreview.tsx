@@ -1,5 +1,6 @@
 import { Paper, Group, Text, ThemeIcon, Tooltip, CopyButton, Stack } from '@mantine/core';
 import { Plus, Minus, Edit, Check, Copy } from 'tabler-icons-react';
+import { useTranslation } from 'react-i18next';
 
 export type DiffEntry = {
   key: string;
@@ -9,10 +10,12 @@ export type DiffEntry = {
 };
 
 export function EnvDiffPreview({ diff }: { diff: DiffEntry[] }) {
+  const { t } = useTranslation();
+
   if (!diff.length) {
     return (
       <Paper p="xl" radius="lg" withBorder>
-        <Text ta="center" color="dimmed">Keine Unterschiede gefunden oder keine Dateien geladen.</Text>
+        <Text ta="center" color="dimmed">{t('status.noDifferences')}</Text>
       </Paper>
     );
   }
@@ -27,22 +30,22 @@ export function EnvDiffPreview({ diff }: { diff: DiffEntry[] }) {
         {diff.map((d) => {
           let color = '#64748b';
           let icon = <Check size={18} />;
-          let label = 'gleich';
+          let label = t('diff.equal');
           let bg = 'rgba(255,255,255,0.02)';
           if (d.status === 'missing_in_a') {
             color = '#10b981';
             icon = <Plus size={18} />;
-            label = 'nur in B';
+            label = t('diff.onlyInB');
             bg = 'rgba(16, 185, 129, 0.1)';
           } else if (d.status === 'missing_in_b') {
             color = '#ef4444';
             icon = <Minus size={18} />;
-            label = 'nur in A';
+            label = t('diff.onlyInA');
             bg = 'rgba(239, 68, 68, 0.1)';
           } else if (d.status === 'different') {
             color = '#f59e0b';
             icon = <Edit size={18} />;
-            label = 'unterschiedlich';
+            label = t('diff.different');
             bg = 'rgba(245, 158, 11, 0.1)';
           }
           return (
@@ -83,7 +86,7 @@ export function EnvDiffPreview({ diff }: { diff: DiffEntry[] }) {
               </Text>
               <CopyButton value={d.status === 'missing_in_a' ? d.valueB : d.valueA} timeout={1500}>
                 {({ copied, copy }) => (
-                  <Tooltip label={copied ? 'Kopiert!' : 'Wert kopieren'} withArrow>
+                  <Tooltip label={copied ? t('diff.copied') : t('diff.copyValue')} withArrow>
                     <ThemeIcon 
                       color={copied ? '#10b981' : '#64748b'} 
                       variant="light" 
