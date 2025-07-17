@@ -23,7 +23,7 @@
 
 ```bash
 # 1. Clone the repository
- git clone https://github.com/your-user/envdiff.git
+ git clone https://github.com/jakubbbdev/envdiff.git
  cd envdiff
 
 # 2. Install dependencies
