@@ -5,27 +5,20 @@ import {
   Text,
   Button,
   Group,
-  Table,
-  Badge,
-  Card,
   useMantineColorScheme,
   ActionIcon,
-  Paper,
-  CopyButton,
-  Tooltip,
-  Center,
-  Divider,
-  ScrollArea,
-  Box,
-  Stack,
-  Notification,
   useComputedColorScheme,
   ThemeIcon,
+  Notification,
+  Center,
+  Box,
+  Stack,
   Transition,
   Alert,
+  ScrollArea,
+  Tooltip,
 } from '@mantine/core';
-import { Dropzone } from '@mantine/dropzone';
-import { Moon, Sun, File, Download, Files, AlertCircle, X, Check, FileDiff, FilePlus, Photo, FileText, Code } from 'tabler-icons-react';
+import { Moon, Sun, File, Download, Files, AlertCircle, X, Check, FileDiff, Photo, FileText, Code } from 'tabler-icons-react';
 import { EnvDiffPreview } from './EnvDiffPreview';
 import type { DiffEntry } from './EnvDiffPreview';
 import html2canvas from 'html2canvas';
@@ -54,10 +47,6 @@ function diffEnv(a: Record<string, string>, b: Record<string, string>) {
     if (a[key] !== b[key]) return { key, status: 'different', valueA: a[key], valueB: b[key] };
     return { key, status: 'equal', valueA: a[key], valueB: b[key] };
   });
-}
-
-function getFileName(file: File | null) {
-  return file ? file.name : '';
 }
 
 function ExportButtons({ diff, envA, envB }: { diff: any[]; envA: any; envB: any }) {
@@ -147,7 +136,7 @@ function ColorSchemeToggle() {
   );
 }
 
-function FileUploadButton({ label, file, onFile, onRemove, onDialog }: { label: string, file: File | null, onFile: (file: File) => void, onRemove: () => void, onDialog: () => void }) {
+function FileUploadButton({ label, file, onFile, onRemove }: { label: string, file: File | null, onFile: (file: File) => void, onRemove: () => void }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const handleClick = () => {
@@ -329,8 +318,8 @@ export default function App() {
         </Box>
         {/* Datei-Uploads */}
         <Group justify="center" align="flex-start" gap={48} style={{ margin: '0 auto', maxWidth: 1000, marginBottom: 40 }}>
-          <FileUploadButton label="Datei A wählen" file={fileA} onFile={f => handleFile('A', f)} onRemove={() => { setFileA(null); setEnvA(null); }} onDialog={() => {}} />
-          <FileUploadButton label="Datei B wählen" file={fileB} onFile={f => handleFile('B', f)} onRemove={() => { setFileB(null); setEnvB(null); }} onDialog={() => {}} />
+          <FileUploadButton label="Datei A wählen" file={fileA} onFile={f => handleFile('A', f)} onRemove={() => { setFileA(null); setEnvA(null); }} />
+          <FileUploadButton label="Datei B wählen" file={fileB} onFile={f => handleFile('B', f)} onRemove={() => { setFileB(null); setEnvB(null); }} />
         </Group>
         {/* Notifications */}
         <Transition mounted={!!notif} transition="slide-up" duration={400} timingFunction="ease">
