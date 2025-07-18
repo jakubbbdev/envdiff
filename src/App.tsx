@@ -22,6 +22,7 @@ import { StatusBanner } from './components/StatusBanner';
 import { NotificationBar } from './components/NotificationBar';
 import './i18n';
 import './styles/animations.css';
+import { demoEnvA, demoEnvB } from './demoData';
 
 export default function App() {
   const [envA, setEnvA] = useState<Record<string, string> | null>(null);
@@ -31,6 +32,7 @@ export default function App() {
   const [notif, setNotif] = useState<{ type: 'success' | 'error', message: string } | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [showOnlyDiff, setShowOnlyDiff] = useState(false);
+  const [demoMode, setDemoMode] = useState(false);
   const appRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
 
@@ -44,8 +46,19 @@ export default function App() {
     return showOnlyDiff ? diff.filter(d => d.status !== 'equal') : diff;
   }, [diff, showOnlyDiff]);
 
+  // Demo-Daten laden
+  const loadDemoData = useCallback(() => {
+    setEnvA(demoEnvA);
+    setEnvB(demoEnvB);
+    setFileA(null);
+    setFileB(null);
+    setDemoMode(true);
+    setNotif({ type: 'success', message: t('status.demoLoaded') });
+  }, [t]);
+
   // Optimized file handler
   const handleFile = useCallback(async (which: 'A' | 'B', file: File) => {
+    setDemoMode(false);
     const name = file.name.toLowerCase();
     if (!name.endsWith('.env') && !name.endsWith('.txt')) {
       setNotif({ type: 'error', message: t('upload.error') });
@@ -171,22 +184,33 @@ export default function App() {
         )}
         <Header />
         {/* Datei-Uploads */}
-        <Box className="animate-fadeIn" style={{ margin: '0 auto', maxWidth: 1200, marginBottom: 50 }}>
-          <Group justify="center" align="flex-start" gap={64}>
-            <FileUploadButton 
-              label={t('upload.fileA')} 
-              file={fileA} 
-              onFile={(f) => handleFile('A', f)} 
-              onRemove={removeFileA} 
-            />
-            <FileUploadButton 
-              label={t('upload.fileB')} 
-              file={fileB} 
-              onFile={(f) => handleFile('B', f)} 
-              onRemove={removeFileB} 
-            />
-          </Group>
-        </Box>
+        <Group justify="center" align="flex-start" gap={64}>
+          <FileUploadButton 
+            label={t('upload.fileA')} 
+            file={fileA} 
+            onFile={(f) => handleFile('A', f)} 
+            onRemove={removeFileA} 
+          />
+          <FileUploadButton 
+            label={t('upload.fileB')} 
+            file={fileB} 
+            onFile={(f) => handleFile('B', f)} 
+            onRemove={removeFileB} 
+          />
+        </Group>
+        <Center mt="md">
+          <button onClick={loadDemoData} style={{
+            background: '#6366f1', color: 'white', border: 'none', borderRadius: 12, padding: '12px 32px', fontWeight: 700, fontSize: 18, cursor: 'pointer', boxShadow: '0 2px 8px rgba(99,102,241,0.15)'}}>
+            {t('status.loadDemo')}
+          </button>
+        </Center>
+        {demoMode && (
+          <Center mt="md">
+            <div style={{background: '#f59e0b', color: '#1e293b', borderRadius: 12, padding: '8px 24px', fontWeight: 600, fontSize: 16, marginTop: 12}}>
+              {t('status.demoActive')}
+            </div>
+          </Center>
+        )}
         {/* Notifications */}
         <NotificationBar notif={notif} onClose={closeNotification} />
         {/* Status */}

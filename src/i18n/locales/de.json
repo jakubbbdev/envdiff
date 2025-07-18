@@ -18,7 +18,10 @@
     "identical": "Die Dateien sind identisch.",
     "differences": "Unterschiede gefunden!",
     "selectFiles": "Bitte wähle zwei .env oder .txt-Dateien aus, um die Unterschiede anzuzeigen.",
-    "noDifferences": "Keine Unterschiede gefunden oder keine Dateien geladen."
+    "noDifferences": "Keine Unterschiede gefunden oder keine Dateien geladen.",
+    "loadDemo": "Demo-Daten laden",
+    "demoActive": "Demo-Daten aktiv – du siehst eine Vorschau!",
+    "demoLoaded": "Demo-Daten geladen!"
   },
   "diff": {
     "showOnly": "Nur Unterschiede anzeigen",
