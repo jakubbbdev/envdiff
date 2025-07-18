@@ -19,7 +19,6 @@ import { FileUploadButton } from './components/FileUploadButton';
 import { DiffSwitch } from './components/DiffSwitch';
 import { ExportButtons } from './components/ExportButtons';
 import { StatusBanner } from './components/StatusBanner';
-import { NotificationBar } from './components/NotificationBar';
 import './i18n';
 import './styles/animations.css';
 import { demoEnvA, demoEnvB } from './demoData';
@@ -29,7 +28,6 @@ export default function App() {
   const [envB, setEnvB] = useState<Record<string, string> | null>(null);
   const [fileA, setFileA] = useState<File | null>(null);
   const [fileB, setFileB] = useState<File | null>(null);
-  const [notif, setNotif] = useState<{ type: 'success' | 'error', message: string } | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [showOnlyDiff, setShowOnlyDiff] = useState(false);
   const [demoMode, setDemoMode] = useState(false);
@@ -53,7 +51,6 @@ export default function App() {
     setFileA(null);
     setFileB(null);
     setDemoMode(true);
-    setNotif({ type: 'success', message: t('status.demoLoaded') });
   }, [t]);
 
   // Optimized file handler
@@ -61,7 +58,6 @@ export default function App() {
     setDemoMode(false);
     const name = file.name.toLowerCase();
     if (!name.endsWith('.env') && !name.endsWith('.txt')) {
-      setNotif({ type: 'error', message: t('upload.error') });
       return;
     }
     try {
@@ -73,9 +69,7 @@ export default function App() {
         setEnvB(parseEnv(text));
         setFileB(file);
       }
-      setNotif({ type: 'success', message: t('upload.success', { name: file.name }) });
     } catch (e) {
-      setNotif({ type: 'error', message: t('upload.readError') });
     }
   }, [t]);
 
@@ -85,7 +79,6 @@ export default function App() {
     setDragActive(false);
     const files = Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.env') || f.name.endsWith('.txt'));
     if (files.length === 0) {
-      setNotif({ type: 'error', message: t('upload.error') });
       return;
     }
     if (!fileA) {
@@ -93,7 +86,7 @@ export default function App() {
     } else if (!fileB) {
       handleFile('B', files[0]);
     } else {
-      setNotif({ type: 'error', message: t('upload.bothSlotsFull') });
+      // setNotif({ type: 'error', message: t('upload.bothSlotsFull') }); // entfernt
     }
   }, [fileA, fileB, handleFile, t]);
 
@@ -118,20 +111,21 @@ export default function App() {
     setEnvB(null);
   }, []);
 
-  const closeNotification = useCallback(() => {
-    setNotif(null);
-  }, []);
-
   // Memoized theme configuration
   const theme = useMemo(() => ({
-    primaryColor: 'indigo',
-    fontFamily: 'Inter, system-ui, sans-serif',
-    defaultRadius: 'xl',
-    headings: { fontWeight: '800' },
+    primaryColor: 'cyan',
+    fontFamily: 'Inter, Fira Sans, system-ui, sans-serif',
+    fontSizes: { xs: '14px', sm: '15px', md: '16px', lg: '18px', xl: '22px' },
+    defaultRadius: 12,
+    spacing: { xs: '6px', sm: '10px', md: '16px', lg: '24px', xl: '32px' },
+    headings: { fontWeight: '900', fontFamily: 'inherit' },
     components: {
-      Button: { defaultProps: { radius: 'xl', size: 'lg' } },
-      Card: { defaultProps: { radius: 'xl', shadow: 'xl' } },
-      Paper: { defaultProps: { radius: 'lg', shadow: 'md' } },
+      Button: { defaultProps: { radius: 10, size: 'md', fw: 600, style: { padding: '8px 20px', fontSize: 16, letterSpacing: -0.2, background: '#232329', color: '#fff', border: '1px solid #232329', boxShadow: 'none' } } },
+      Card: { defaultProps: { radius: 12, shadow: 'sm', p: 20, style: { background: '#232329', border: '1px solid #232329', boxShadow: '0 2px 8px rgba(0,0,0,0.10)' } } },
+      Paper: { defaultProps: { radius: 12, shadow: 'sm', p: 20, style: { background: '#232329', border: '1px solid #232329', boxShadow: '0 2px 8px rgba(0,0,0,0.10)' } } },
+      Group: { defaultProps: { gap: 16 } },
+      Stack: { defaultProps: { gap: 16 } },
+      Text: { defaultProps: { size: 'md', fw: 500, style: { letterSpacing: -0.1 } } }
     },
   }), []);
 
@@ -143,12 +137,10 @@ export default function App() {
     >
       <Box 
         ref={appRef} 
-        className="animate-gradientShift"
         style={{ 
           minHeight: '100vh', 
-          background: 'linear-gradient(135deg, #0f1419 0%, #1a1f2e 50%, #0f1419 100%)',
-          backgroundSize: '400% 400%',
-          paddingBottom: 80, 
+          background: '#18181b',
+          padding: '24px 0 48px 0',
           position: 'relative' 
         }}
         onDrop={onDrop} 
@@ -199,20 +191,68 @@ export default function App() {
           />
         </Group>
         <Center mt="md">
-          <button onClick={loadDemoData} style={{
-            background: '#6366f1', color: 'white', border: 'none', borderRadius: 12, padding: '12px 32px', fontWeight: 700, fontSize: 18, cursor: 'pointer', boxShadow: '0 2px 8px rgba(99,102,241,0.15)'}}>
-            {t('status.loadDemo')}
-          </button>
+          {!demoMode ? (
+            <button onClick={loadDemoData} style={{
+              background: 'transparent',
+              color: '#fff',
+              border: '1.5px solid #333',
+              borderRadius: 6,
+              padding: '6px 16px',
+              fontWeight: 500,
+              fontSize: 14,
+              letterSpacing: 0,
+              cursor: 'pointer',
+              transition: 'border 0.15s, color 0.15s',
+              outline: 'none',
+              marginRight: 8,
+              boxShadow: 'none',
+              lineHeight: 1.2
+            }}
+            onMouseOver={e => { (e.currentTarget as HTMLButtonElement).style.border = '1.5px solid #06b6d4'; (e.currentTarget as HTMLButtonElement).style.color = '#06b6d4'; }}
+            onMouseOut={e => { (e.currentTarget as HTMLButtonElement).style.border = '1.5px solid #333'; (e.currentTarget as HTMLButtonElement).style.color = '#fff'; }}
+            >
+              {t('status.loadDemo')}
+            </button>
+          ) : (
+            <button onClick={() => { setEnvA(null); setEnvB(null); setDemoMode(false); }} style={{
+              background: 'transparent',
+              color: '#aaa',
+              border: '1.5px solid #333',
+              borderRadius: 6,
+              padding: '6px 16px',
+              fontWeight: 500,
+              fontSize: 14,
+              letterSpacing: 0,
+              cursor: 'pointer',
+              transition: 'border 0.15s, color 0.15s',
+              outline: 'none',
+              marginRight: 8,
+              boxShadow: 'none',
+              lineHeight: 1.2
+            }}
+            onMouseOver={e => { (e.currentTarget as HTMLButtonElement).style.border = '1.5px solid #ef4444'; (e.currentTarget as HTMLButtonElement).style.color = '#ef4444'; }}
+            onMouseOut={e => { (e.currentTarget as HTMLButtonElement).style.border = '1.5px solid #333'; (e.currentTarget as HTMLButtonElement).style.color = '#aaa'; }}
+            >
+              {t('status.removeDemo')}
+            </button>
+          )}
+          {demoMode && (
+            <span style={{
+              display: 'inline-block',
+              background: '#232329',
+              color: '#06b6d4',
+              borderRadius: 6,
+              padding: '2px 10px',
+              fontWeight: 500,
+              fontSize: 12,
+              marginLeft: 8,
+              border: '1px solid #06b6d4',
+              verticalAlign: 'middle',
+              lineHeight: 1.2
+            }}>{t('status.demoActive')}</span>
+          )}
         </Center>
-        {demoMode && (
-          <Center mt="md">
-            <div style={{background: '#f59e0b', color: '#1e293b', borderRadius: 12, padding: '8px 24px', fontWeight: 600, fontSize: 16, marginTop: 12}}>
-              {t('status.demoActive')}
-            </div>
-          </Center>
-        )}
         {/* Notifications */}
-        <NotificationBar notif={notif} onClose={closeNotification} />
         {/* Status */}
         <StatusBanner diff={filteredDiff} envA={envA} envB={envB} />
         {/* Diff-Ansicht */}

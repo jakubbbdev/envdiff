@@ -1,10 +1,10 @@
-import { Group, Button } from '@mantine/core';
+import { Group, Tooltip, ActionIcon } from '@mantine/core';
 import { Download, FileText, Code, Photo, Table } from 'tabler-icons-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
 import { useTranslation } from 'react-i18next';
-import { memo, useMemo, useCallback } from 'react';
+import { memo, useCallback } from 'react';
 
 export const ExportButtons = memo(({ diff, envA, envB }: { diff: any[]; envA: any; envB: any }) => {
   const { t } = useTranslation();
@@ -149,174 +149,116 @@ ${diff.map(d => `  - key: ${d.key}
     pdf.save('envdiff.pdf');
   }, []);
 
-  // Memoized button styles
-  const buttonStyles = useMemo(() => ({
-    excel: {
-      background: 'linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(34,197,94,0.05) 100%)',
-      border: '1px solid rgba(34,197,94,0.2)',
-      backdropFilter: 'blur(10px)',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-      fontWeight: 600
-    },
-    csv: {
-      background: 'linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(59,130,246,0.05) 100%)',
-      border: '1px solid rgba(59,130,246,0.2)',
-      backdropFilter: 'blur(10px)',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-      fontWeight: 600
-    },
-    markdown: {
-      background: 'linear-gradient(135deg, rgba(20,184,166,0.1) 0%, rgba(20,184,166,0.05) 100%)',
-      border: '1px solid rgba(20,184,166,0.2)',
-      backdropFilter: 'blur(10px)',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-      fontWeight: 600
-    },
-    json: {
-      background: 'linear-gradient(135deg, rgba(139,92,246,0.1) 0%, rgba(139,92,246,0.05) 100%)',
-      border: '1px solid rgba(139,92,246,0.2)',
-      backdropFilter: 'blur(10px)',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-      fontWeight: 600
-    },
-    text: {
-      background: 'linear-gradient(135deg, rgba(107,114,128,0.1) 0%, rgba(107,114,128,0.05) 100%)',
-      border: '1px solid rgba(107,114,128,0.2)',
-      backdropFilter: 'blur(10px)',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-      fontWeight: 600
-    },
-    xml: {
-      background: 'linear-gradient(135deg, rgba(249,115,22,0.1) 0%, rgba(249,115,22,0.05) 100%)',
-      border: '1px solid rgba(249,115,22,0.2)',
-      backdropFilter: 'blur(10px)',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-      fontWeight: 600
-    },
-    yaml: {
-      background: 'linear-gradient(135deg, rgba(6,182,212,0.1) 0%, rgba(6,182,212,0.05) 100%)',
-      border: '1px solid rgba(6,182,212,0.2)',
-      backdropFilter: 'blur(10px)',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-      fontWeight: 600
-    },
-    png: {
-      background: 'linear-gradient(135deg, rgba(249,115,22,0.1) 0%, rgba(249,115,22,0.05) 100%)',
-      border: '1px solid rgba(249,115,22,0.2)',
-      backdropFilter: 'blur(10px)',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-      fontWeight: 600
-    },
-    pdf: {
-      background: 'linear-gradient(135deg, rgba(239,68,68,0.1) 0%, rgba(239,68,68,0.05) 100%)',
-      border: '1px solid rgba(239,68,68,0.2)',
-      backdropFilter: 'blur(10px)',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-      fontWeight: 600
-    }
-  }), []);
-
   return (
-    <Group gap="lg" mt="xl" justify="center" wrap="wrap" className="animate-fadeIn">
-      <Button 
-        leftSection={<Table size={20} />} 
-        variant="light" 
-        color="green" 
-        size="lg" 
-        radius="xl" 
-        onClick={downloadAsExcel}
-        style={buttonStyles.excel}
-      >
-        {t('export.excel')}
-      </Button>
-      <Button 
-        leftSection={<Download size={20} />} 
-        variant="light" 
-        color="blue" 
-        size="lg" 
-        radius="xl" 
-        onClick={() => download(getExport('csv'), 'envdiff.csv', 'text/csv')}
-        style={buttonStyles.csv}
-      >
-        {t('export.csv')}
-      </Button>
-      <Button 
-        leftSection={<FileText size={20} />} 
-        variant="light" 
-        color="teal" 
-        size="lg" 
-        radius="xl" 
-        onClick={() => download(getExport('md'), 'envdiff.md', 'text/markdown')}
-        style={buttonStyles.markdown}
-      >
-        {t('export.markdown')}
-      </Button>
-      <Button 
-        leftSection={<Code size={20} />} 
-        variant="light" 
-        color="violet" 
-        size="lg" 
-        radius="xl" 
-        onClick={() => download(getExport('json'), 'envdiff.json', 'application/json')}
-        style={buttonStyles.json}
-      >
-        {t('export.json')}
-      </Button>
-      <Button 
-        leftSection={<FileText size={20} />} 
-        variant="light" 
-        color="gray" 
-        size="lg" 
-        radius="xl" 
-        onClick={() => download(getExport('txt'), 'envdiff.txt', 'text/plain')}
-        style={buttonStyles.text}
-      >
-        {t('export.text')}
-      </Button>
-      <Button 
-        leftSection={<Code size={20} />} 
-        variant="light" 
-        color="orange" 
-        size="lg" 
-        radius="xl" 
-        onClick={() => download(getExport('xml'), 'envdiff.xml', 'application/xml')}
-        style={buttonStyles.xml}
-      >
-        {t('export.xml')}
-      </Button>
-      <Button 
-        leftSection={<Code size={20} />} 
-        variant="light" 
-        color="cyan" 
-        size="lg" 
-        radius="xl" 
-        onClick={() => download(getExport('yaml'), 'envdiff.yaml', 'text/yaml')}
-        style={buttonStyles.yaml}
-      >
-        {t('export.yaml')}
-      </Button>
-      <Button 
-        leftSection={<Photo size={20} />} 
-        variant="light" 
-        color="orange" 
-        size="lg" 
-        radius="xl" 
-        onClick={downloadAsPNG}
-        style={buttonStyles.png}
-      >
-        {t('export.png')}
-      </Button>
-      <Button 
-        leftSection={<FileText size={20} />} 
-        variant="light" 
-        color="red" 
-        size="lg" 
-        radius="xl" 
-        onClick={downloadAsPDF}
-        style={buttonStyles.pdf}
-      >
-        {t('export.pdf')}
-      </Button>
+    <Group gap={8} mt={16} justify="center" wrap="wrap">
+      <Tooltip label={t('export.excel')} withArrow>
+        <ActionIcon 
+          variant="filled"
+          color="dark"
+          size={36}
+          radius={8}
+          onClick={downloadAsExcel}
+          style={{ background: '#232329', color: '#fff', border: '1px solid #232329', margin: 2 }}
+        >
+          <Table size={18} />
+        </ActionIcon>
+      </Tooltip>
+      <Tooltip label={t('export.csv')} withArrow>
+        <ActionIcon 
+          variant="filled"
+          color="dark"
+          size={36}
+          radius={8}
+          onClick={() => download(getExport('csv'), 'envdiff.csv', 'text/csv')}
+          style={{ background: '#232329', color: '#fff', border: '1px solid #232329', margin: 2 }}
+        >
+          <Download size={18} />
+        </ActionIcon>
+      </Tooltip>
+      <Tooltip label={t('export.markdown')} withArrow>
+        <ActionIcon 
+          variant="filled"
+          color="dark"
+          size={36}
+          radius={8}
+          onClick={() => download(getExport('md'), 'envdiff.md', 'text/markdown')}
+          style={{ background: '#232329', color: '#fff', border: '1px solid #232329', margin: 2 }}
+        >
+          <FileText size={18} />
+        </ActionIcon>
+      </Tooltip>
+      <Tooltip label={t('export.json')} withArrow>
+        <ActionIcon 
+          variant="filled"
+          color="dark"
+          size={36}
+          radius={8}
+          onClick={() => download(getExport('json'), 'envdiff.json', 'application/json')}
+          style={{ background: '#232329', color: '#fff', border: '1px solid #232329', margin: 2 }}
+        >
+          <Code size={18} />
+        </ActionIcon>
+      </Tooltip>
+      <Tooltip label={t('export.text')} withArrow>
+        <ActionIcon 
+          variant="filled"
+          color="dark"
+          size={36}
+          radius={8}
+          onClick={() => download(getExport('txt'), 'envdiff.txt', 'text/plain')}
+          style={{ background: '#232329', color: '#fff', border: '1px solid #232329', margin: 2 }}
+        >
+          <FileText size={18} />
+        </ActionIcon>
+      </Tooltip>
+      <Tooltip label={t('export.xml')} withArrow>
+        <ActionIcon 
+          variant="filled"
+          color="dark"
+          size={36}
+          radius={8}
+          onClick={() => download(getExport('xml'), 'envdiff.xml', 'application/xml')}
+          style={{ background: '#232329', color: '#fff', border: '1px solid #232329', margin: 2 }}
+        >
+          <Code size={18} />
+        </ActionIcon>
+      </Tooltip>
+      <Tooltip label={t('export.yaml')} withArrow>
+        <ActionIcon 
+          variant="filled"
+          color="dark"
+          size={36}
+          radius={8}
+          onClick={() => download(getExport('yaml'), 'envdiff.yaml', 'text/yaml')}
+          style={{ background: '#232329', color: '#fff', border: '1px solid #232329', margin: 2 }}
+        >
+          <Code size={18} />
+        </ActionIcon>
+      </Tooltip>
+      <Tooltip label={t('export.png')} withArrow>
+        <ActionIcon 
+          variant="filled"
+          color="dark"
+          size={36}
+          radius={8}
+          onClick={downloadAsPNG}
+          style={{ background: '#232329', color: '#fff', border: '1px solid #232329', margin: 2 }}
+        >
+          <Photo size={18} />
+        </ActionIcon>
+      </Tooltip>
+      <Tooltip label={t('export.pdf')} withArrow>
+        <ActionIcon 
+          variant="filled"
+          color="dark"
+          size={36}
+          radius={8}
+          onClick={downloadAsPDF}
+          style={{ background: '#232329', color: '#fff', border: '1px solid #232329', margin: 2 }}
+        >
+          <FileText size={18} />
+        </ActionIcon>
+      </Tooltip>
     </Group>
   );
 });

@@ -21,7 +21,8 @@
     "noDifferences": "No differences found or no files loaded.",
     "loadDemo": "Load demo data",
     "demoActive": "Demo data active – you are seeing a preview!",
-    "demoLoaded": "Demo data loaded!"
+    "demoLoaded": "Demo data loaded!",
+    "removeDemo": "Remove demo data"
   },
   "diff": {
     "showOnly": "Show only differences",
