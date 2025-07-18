@@ -45,9 +45,9 @@
 - [x] PNG/PDF export
 - [x] Modern, responsive design
 - [x] Drag & Drop + file dialog
-- [ ] Multilanguage (EN/DE)
-- [ ] Web preview with demo data
-- [ ] More export options (Excel, etc.)
+- [x] Multilanguage (EN/DE)
+- [x] Web preview with demo data
+- [x] More export options (Excel, etc.)
 
 ## License
 MIT
